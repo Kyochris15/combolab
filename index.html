@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ComboLab — Mejores combos de juegos de pelea</title>
+<link rel="stylesheet" href="style.css" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="logo"><span class="logo-icon">🥊</span> ComboLab <span class="logo-sub">NewBeginning</span></div>
+    <div class="nav-search">
+      <input id="searchUser" placeholder="Buscar jugador (@usuario)" />
+      <button id="btnGoUser" class="btn ghost small">Ir</button>
+    </div>
+    <div class="nav-actions">
+      <span id="userEmail" class="user-email"></span>
+      <button id="btnHome" class="btn ghost">Inicio</button>
+      <button id="btnProfile" class="btn ghost hidden">Mi perfil</button>
+      <button id="btnModerar" class="btn ghost hidden">⚙️ Moderación</button>
+      <button id="btnLogin" class="btn ghost">Entrar</button>
+      <button id="btnLogout" class="btn ghost hidden">Salir</button>
+      <button id="btnNuevo" class="btn primary">+ Subir combo</button>
+    </div>
+  </div>
+  <div class="tabs">
+    <button data-tab="new" class="tab active">Recientes</button>
+    <button data-tab="top" class="tab">Top semanal 🔥</button>
+    <button data-tab="fav" class="tab">Mis favoritos ⭐</button>
+  </div>
+</nav>
+
+<div id="view-home">
+<header class="hero">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-content">
+    <h1>Domina cada <span class="neon">combo</span></h1>
+    <p>Sube clips, comparte notación, comenta y vota. SF6 • Tekken 8 • MK1 • Strive • KOF XV • DBFZ</p>
+    <div class="hero-stats">
+      <div><b id="statTotal">0</b><span>combos</span></div>
+      <div><b id="statGames">6</b><span>juegos</span></div>
+      <div><b id="statLikes">0</b><span>likes</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <select id="filterJuego">
+    <option value="">Todos los juegos</option>
+    <option>Street Fighter 6</option><option>Tekken 8</option>
+    <option>Mortal Kombat 1</option><option>Guilty Gear Strive</option>
+    <option>The King of Fighters XV</option><option>Dragon Ball FighterZ</option>
+  </select>
+  <select id="filterDif">
+    <option value="">Todas dificultades</option>
+    <option>Fácil</option><option>Medio</option><option>Difícil</option><option>Experto</option>
+  </select>
+  <select id="filterCat">
+    <option value="">Todas categorías</option>
+    <option>Wall carry</option><option>Kill</option><option>Anti-air</option><option>Otoshi</option><option>Corrección</option><option>Frame trap</option><option>Otro</option>
+  </select>
+  <select id="sortBy">
+    <option value="new">Más recientes</option>
+    <option value="likes">Más votados</option>
+    <option value="dano">Más daño</option>
+  </select>
+  <input id="search" placeholder="Buscar personaje o título... (ej: Jin, Ed)" />
+</div>
+
+<main id="grid" class="grid"></main>
+</div>
+
+<section id="view-profile" class="hidden profile-page">
+  <div id="pBanner" class="p-banner">
+    <button id="btnEditBanner" class="btn ghost small hidden">Editar fondo</button>
+    <button id="btnFollowUser" class="btn primary small hidden">Seguir</button>
+  </div>
+  <div class="p-head">
+    <img id="pAvatar" class="p-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=ComboLab" alt="avatar" />
+    <div><h2 id="pvUsername">@user</h2><p id="pvBio" class="mut"></p>
+    <div id="pvStats" class="mut" style="margin-top:6px"></div>
+    <div id="pvBadges" class="mut" style="margin-top:8px"></div>
+    <div id="pvSocials" class="psocials"></div></div>
+  </div>
+  <div id="pEditZone" class="p-edit">
+    <h3>Personalizar perfil</h3>
+    <div class="row">
+      <label>Avatar (imagen)<input id="eAvatarFile" type="file" accept="image/*" /></label>
+      <label>O URL avatar<input id="eAvatarUrl" placeholder="https://..." /></label>
+    </div>
+    <div class="row">
+      <label>Fondo (imagen)<input id="eBannerFile" type="file" accept="image/*" /></label>
+      <label>O URL fondo<input id="eBannerUrl" placeholder="https://..." /></label>
+    </div>
+    <div class="row">
+      <label>Color fondo<input id="eBannerColor" type="color" value="#8b5cf6" /></label>
+      <label>Estilo fondo<select id="eBannerStyle"><option value="cover">Imagen completa</option><option value="pattern">Patrón / degradado</option></select></label>
+    </div>
+    <label>Nombre de usuario*<input id="eUsername" maxlength="24" /></label>
+    <label>Bio<input id="eBio" maxlength="120" /></label>
+    <div class="row"><label>X<input id="eTwitter" /></label><label>YouTube<input id="eYoutube" /></label><label>Twitch<input id="eTwitch" /></label></div>
+    <button id="btnSaveProfilePage" class="btn primary">Guardar cambios</button>
+    <p id="profilePageStatus"></p>
+  </div>
+  <h3>Mis combos</h3><div id="myGrid" class="grid"></div>
+  <h3>Mis favoritos</h3><div id="favGrid" class="grid"></div>
+</section>
+<footer>ComboLab • Hecho para la FGC • <span id="footUser"></span></footer>
+
+<dialog id="modal">
+  <form method="dialog" id="formCombo">
+    <h2>Subir nuevo combo</h2>
+    <p class="hint" id="loginHint">Debes entrar para subir.</p>
+    <label>Juego*<select id="fJuego" required>
+      <option>Street Fighter 6</option><option>Tekken 8</option>
+      <option>Mortal Kombat 1</option><option>Guilty Gear Strive</option>
+      <option>The King of Fighters XV</option><option>Dragon Ball FighterZ</option>
+    </select></label>
+    <label>Personaje* <input id="fPersonaje" required placeholder="Ej: Jin Kazama" /></label>
+    <label>Título* <input id="fTitulo" required placeholder="Ej: 15 hits wall carry" /></label>
+    <div class="row">
+      <label>Daño <input id="fDano" type="number" placeholder="320" /></label>
+      <label>Dificultad <select id="fDificultad"><option>Fácil</option><option>Medio</option><option>Difícil</option><option>Experto</option></select></label>
+      <label>Categoría <select id="fCategoria"><option>Wall carry</option><option>Kill</option><option>Anti-air</option><option>Otoshi</option><option>Corrección</option><option>Frame trap</option><option>Otro</option></select></label>
+    </div>
+    <label>Notación <input id="fNotacion" placeholder="Ej: f+4, 1,2, EWGF..." /></label>
+    <label>Link redes / fuente (opcional) <input id="fSource" placeholder="https://x.com/... o youtube..." /></label>
+    <label>Video* (mp4/webm, max 50MB) <input id="fVideo" type="file" accept="video/mp4,video/webm" required /></label>
+    <label>Descripción <textarea id="fDesc" rows="2"></textarea></label>
+    <div class="row">
+      <button value="cancel" formnovalidate class="btn ghost">Cancelar</button>
+      <button id="btnSubir" value="default" class="btn primary">Subir</button>
+    </div>
+    <p id="status"></p>
+  </form>
+</dialog>
+
+<dialog id="authModal">
+  <form method="dialog" id="formAuth">
+    <h2>Entrar a ComboLab</h2>
+    <label>Email <input id="aEmail" type="email" required placeholder="tu@email.com" /></label>
+    <label>Contraseña <input id="aPass" type="password" required placeholder="••••••••" /></label>
+    <div class="row">
+      <button id="btnSignup" class="btn ghost" value="default">Crear cuenta</button>
+      <button id="btnSignin" class="btn primary" value="default">Entrar</button>
+    </div>
+    <p id="authStatus"></p>
+    <button value="cancel" formnovalidate class="link">Cerrar</button>
+  </form>
+</dialog>
+
+<dialog id="profileModal">
+  <form method="dialog" id="formProfile">
+    <h2>Mi perfil</h2>
+    <label>Nombre de usuario* <input id="pUsername" required placeholder="ej: KyoCombos" maxlength="24" /></label>
+    <label>Bio <input id="pBio" placeholder="Main Ed, SF6..." maxlength="120" /></label>
+    <label>X / Twitter <input id="pTwitter" placeholder="https://x.com/tuuser" /></label>
+    <label>YouTube <input id="pYoutube" placeholder="https://youtube.com/@tu" /></label>
+    <label>Twitch <input id="pTwitch" placeholder="https://twitch.tv/tu" /></label>
+    <div class="row">
+      <button value="cancel" formnovalidate class="btn ghost">Cerrar</button>
+      <button id="btnSaveProfile" value="default" class="btn primary">Guardar</button>
+    </div>
+    <p id="profileStatus"></p>
+  </form>
+</dialog>
+
+<dialog id="modModal">
+  <form method="dialog" id="formMod">
+    <h2>⚙️ Moderación</h2>
+    <p class="mut">Solo visible para administradores</p>
+    <h3>Reportes recibidos</h3>
+    <div id="modReports" class="grid" style="grid-template-columns:1fr;gap:10px"></div>
+    <h3>Usuarios registrados</h3>
+    <div id="modUsers" class="grid" style="grid-template-columns:1fr;gap:10px"></div>
+    <button value="cancel" formnovalidate class="btn ghost">Cerrar</button>
+  </form>
+</dialog>
+
+<dialog id="detailModal">
+  <div class="detail">
+    <div class="detail-head"><h2 id="dTitle"></h2><button id="dClose" class="btn ghost">✕</button></div>
+    <video id="dVideo" controls></video>
+    <div id="dMeta" class="meta"></div>
+    <div id="dNotacion" class="notacion"></div>
+    <p id="dDesc"></p>
+    <div id="dAuthor" class="authorbox"></div>
+    <div class="detail-actions">
+      <button id="dLike" class="like">❤️ 0</button>
+      <button id="dFav" class="like">⭐ Guardar</button>
+      <button id="dReport" class="del">Reportar</button>
+    </div>
+    <h3>Comentarios (<span id="cCount">0</span>)</h3>
+    <div id="comments" class="comments-box"></div>
+    <div class="row"><input id="cInput" placeholder="Escribe un comentario..." maxlength="300" /><button id="cSend" class="btn primary">Enviar</button></div>
+  </div>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>
