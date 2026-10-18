@@ -242,7 +242,7 @@ function render(){
         ${c.dificultad?`<span class="tag dif-${c.dificultad}">${c.dificultad}</span>`:""}
         ${c.dano?`<span class="tag">💥 ${c.dano}</span>`:""}</div>
         <h3>${c.titulo||""}</h3>
-        ${c.notacion?`<div class="notacion">${c.notacion.slice(0,80)}${c.notacion.length>80?"...":""}</div>`:""}
+        ${c.descripcion?`<div class="descripcion">${c.descripcion.slice(0,80)}${c.descripcion.length>80?"...":""}</div>`:""}
         <div class="cardfoot">
           <span><button class="like">❤️ ${c.likes||0}</button>
           <button class="like favbtn">${faved?"⭐":"☆"}</button></span>

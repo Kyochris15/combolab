@@ -44,6 +44,7 @@
 .tag.dif-Experto{border-color:var(--red);color:var(--red)}.tag.dif-Difícil{border-color:var(--gold);color:var(--gold)}
 .card h3{margin:6px 0}.card p{color:var(--mut);font-size:14px}
 .notacion{font-family:JetBrains Mono,monospace;font-size:13px;background:#0b0e17;border:1px dashed #33406a;padding:8px;border-radius:8px;white-space:pre-wrap;margin:8px 0}
+.descripcion{font-family:JetBrains Mono,monospace;font-size:13px;background:#0b0e17;border:1px dashed #33406a;padding:8px;border-radius:8px;white-space:pre-wrap;margin:8px 0}
 .cardfoot{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
 .like{background:#222a48;border:1px solid var(--line);color:#fff;border-radius:10px;padding:7px 12px;cursor:pointer}
 .like:hover{border-color:var(--red)}
