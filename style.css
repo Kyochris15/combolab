@@ -103,6 +103,11 @@ footer{text-align:center;color:var(--mut);padding:30px;font-size:13px}
 
 /* MODERACIÓN */
 #modModal{max-width:700px;width:92vw;padding:0}
+#detailModal::backdrop{
+  background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(4px);
+  cursor:pointer
+}
 .mod-card{background:#0e1220;border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;justify-content:space-between;align-items:flex-start}
 .mod-card h4{margin:0 0 6px 0;font-size:15px}
 .mod-card p{margin:0;color:var(--mut);font-size:13px}

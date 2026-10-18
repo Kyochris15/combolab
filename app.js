@@ -372,6 +372,9 @@ document.getElementById("dReport").onclick = async () => {
   await supa.from("reports").insert({combo_id:currentCombo.id,user_id:session.user.id,reason:r});
   alert("Reportado. Gracias.");
 };
+detailModal.addEventListener("click", (e) => {
+  if (e.target === detailModal) detailModal.close();
+});
 async function loadComments(combo_id){
   console.log("Cargando comentarios para combo:", combo_id);
   try {
